@@ -32,21 +32,55 @@
 
 ### Запуск з Docker (Рекомендовано)
 
-#### Метод 1: Автоматичний запуск (найшвидший)
+#### Метод 1: Використання готового образу з Docker Hub (найшвидший)
+```bash
+# Завантажити та запустити контейнер
+docker run -d \
+  -p 80:80 \
+  -p 3000:3000 \
+  -v familyevening-data:/app/data \
+  --name familyevening \
+  sdgadmin/familyevening:latest
+
+# Відкрити в браузері
+open http://localhost
+```
+
+Або з docker-compose - створіть `docker-compose.yml`:
+```yaml
+services:
+  app:
+    image: sdgadmin/familyevening:v0.3.0
+    ports:
+      - "80:80"
+      - "3000:3000"
+    volumes:
+      - app-data:/app/data
+    restart: unless-stopped
+volumes:
+  app-data:
+```
+
+Потім:
+```bash
+docker-compose up -d
+```
+
+#### Метод 2: Збірка з вихідного коду (автоматичний запуск)
 ```bash
 git clone <repository-url>
 cd familyevening
 ./first-run.sh
 ```
 
-#### Метод 2: Використання Makefile
+#### Метод 3: Використання Makefile
 ```bash
 git clone <repository-url>
 cd familyevening
 make quick-start
 ```
 
-#### Метод 3: Ручний запуск
+#### Метод 4: Ручний запуск
 ```bash
 git clone <repository-url>
 cd familyevening
@@ -225,6 +259,36 @@ docker-compose up -d
 
 ### Frontend не підключається до backend:
 Перевірте CORS налаштування в `backend/src/index.js` та proxy в `frontend/vite.config.js`
+
+## Публікація на Docker Hub 🚀
+
+### Готовий образ
+Образ доступний на Docker Hub: **sdgadmin/familyevening**
+
+📦 https://hub.docker.com/r/sdgadmin/familyevening
+
+### Публікація нової версії (для розробників)
+
+```bash
+# 1. Увійдіть в Docker Hub
+docker login
+
+# 2. Зберіть образ
+make build
+
+# 3. Опублікуйте (використає версію з git tag)
+make publish
+
+# Або вкажіть конкретну версію
+make publish-version VERSION=v0.3.0
+
+# Або використайте скрипт напряму
+./docker-publish.sh v0.3.0
+```
+
+Скрипт автоматично створить теги `latest` та вказану версію.
+
+Детальніше див. [DOCKER_HUB.md](DOCKER_HUB.md)
 
 ## Ліцензія
 

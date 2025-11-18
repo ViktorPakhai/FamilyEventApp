@@ -40,3 +40,9 @@ shell: ## Відкрити shell в контейнері
 test: ## Тестувати API endpoints
 	@echo "Testing backend API..."
 	@curl -s http://localhost:3000/api/admin/events | jq
+
+publish: ## Опублікувати образ на Docker Hub
+	@./docker-publish.sh
+
+publish-version: ## Опублікувати образ з конкретною версією (make publish-version VERSION=v0.3.0)
+	@./docker-publish.sh $(VERSION)
