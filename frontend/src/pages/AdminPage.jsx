@@ -70,7 +70,11 @@ function AdminPage() {
     try {
       const res = await fetch(`/api/admin/events/${eventId}/user-questions`)
       const data = await res.json()
-      setUserQuestions(data.questions)
+      // Sort questions by date - newest first
+      const sortedQuestions = (data.questions || []).sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at)
+      })
+      setUserQuestions(sortedQuestions)
     } catch (err) {
       console.error('Error loading questions:', err)
     }
@@ -219,9 +223,12 @@ function AdminPage() {
 
   const toggleQuestionAnswered = async (questionId) => {
     try {
-      await fetch(`/api/admin/user-questions/${questionId}/toggle-answered`, {
+      console.log('Toggling question answered status:', questionId)
+      const response = await fetch(`/api/admin/user-questions/${questionId}/toggle-answered`, {
         method: 'PATCH'
       })
+      const data = await response.json()
+      console.log('Toggle response:', data)
       loadUserQuestions(selectedEvent)
     } catch (err) {
       console.error('Error toggling answered status:', err)
