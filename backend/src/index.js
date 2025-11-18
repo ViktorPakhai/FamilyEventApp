@@ -560,6 +560,37 @@ app.patch('/api/admin/user-questions/:questionId/stars', async (req, res) => {
   }
 });
 
+// Перемкнути статус відповіді на питання
+app.patch('/api/admin/user-questions/:questionId/toggle-answered', async (req, res) => {
+  try {
+    const { questionId } = req.params;
+
+    // Отримати поточний статус
+    const currentQuestion = db.prepare('SELECT is_answered FROM user_questions WHERE id = ?').get(questionId);
+
+    if (!currentQuestion) {
+      return res.status(404).json({ error: 'Питання не знайдено' });
+    }
+
+    // Перемкнути статус
+    const newStatus = currentQuestion.is_answered === 1 ? 0 : 1;
+
+    db.prepare(
+      'UPDATE user_questions SET is_answered = ? WHERE id = ?'
+    ).run(newStatus, questionId);
+
+    const updatedQuestion = db.prepare('SELECT * FROM user_questions WHERE id = ?').get(questionId);
+
+    res.json({
+      success: true,
+      question: updatedQuestion
+    });
+  } catch (error) {
+    console.error('Toggle answered error:', error);
+    res.status(500).json({ error: 'Помилка оновлення статусу' });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK' });

@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS user_questions (
     user_session_id INTEGER,
     question_text TEXT NOT NULL,
     stars INTEGER DEFAULT 0,
+    is_answered INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
     FOREIGN KEY (user_session_id) REFERENCES user_sessions(id) ON DELETE CASCADE

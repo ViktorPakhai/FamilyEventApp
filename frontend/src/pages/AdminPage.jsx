@@ -217,6 +217,17 @@ function AdminPage() {
     }
   }
 
+  const toggleQuestionAnswered = async (questionId) => {
+    try {
+      await fetch(`/api/admin/user-questions/${questionId}/toggle-answered`, {
+        method: 'PATCH'
+      })
+      loadUserQuestions(selectedEvent)
+    } catch (err) {
+      console.error('Error toggling answered status:', err)
+    }
+  }
+
   if (loading) {
     return <div className="loading">Завантаження...</div>
   }
@@ -536,23 +547,46 @@ function AdminPage() {
               <ul className="question-list">
                 {userQuestions.map(q => (
                   <li key={q.id} className="question-item">
-                    <div>
-                      <strong>{q.user_name}</strong>
-                      <small style={{ marginLeft: '12px', color: '#6b7280' }}>
-                        {new Date(q.created_at).toLocaleString('uk-UA')}
-                      </small>
-                    </div>
-                    <p style={{ margin: '12px 0' }}>{q.question_text}</p>
-                    <div className="stars">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <span
-                          key={star}
-                          className={`star ${star <= q.stars ? 'filled' : 'empty'}`}
-                          onClick={() => updateQuestionStars(q.id, star === q.stars ? star - 1 : star)}
-                        >
-                          ⭐
-                        </span>
-                      ))}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <input
+                        type="checkbox"
+                        checked={q.is_answered === 1}
+                        onChange={() => toggleQuestionAnswered(q.id)}
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          marginTop: '4px',
+                          cursor: 'pointer',
+                          flexShrink: 0
+                        }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div>
+                          <strong>{q.user_name}</strong>
+                          <small style={{ marginLeft: '12px', color: '#6b7280' }}>
+                            {new Date(q.created_at).toLocaleString('uk-UA')}
+                          </small>
+                        </div>
+                        <p style={{
+                          margin: '12px 0',
+                          textDecoration: q.is_answered === 1 ? 'line-through' : 'none',
+                          color: q.is_answered === 1 ? '#9ca3af' : '#1f2937',
+                          transition: 'all 0.2s ease'
+                        }}>
+                          {q.question_text}
+                        </p>
+                        <div className="stars">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <span
+                              key={star}
+                              className={`star ${star <= q.stars ? 'filled' : 'empty'}`}
+                              onClick={() => updateQuestionStars(q.id, star === q.stars ? star - 1 : star)}
+                            >
+                              ⭐
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </li>
                 ))}
