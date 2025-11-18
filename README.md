@@ -21,33 +21,55 @@
 
 - **Backend**: Node.js + Express
 - **Frontend**: React + Vite
-- **База даних**: PostgreSQL
+- **База даних**: SQLite (better-sqlite3)
 - **Deployment**: Docker + Docker Compose
 
-## Швидкий старт
+## Швидкий старт ⚡
 
 ### Вимоги
 - Docker та Docker Compose
-- Node.js 18+ (для локальної розробки)
+- Node.js 18+ (опціонально, для локальної розробки)
 
-### Запуск з Docker (Production)
+### Запуск з Docker (Рекомендовано)
 
-1. Клонуйте репозиторій:
+#### Метод 1: Автоматичний запуск (найшвидший)
 ```bash
 git clone <repository-url>
 cd familyevening
+./first-run.sh
 ```
 
-2. Запустіть всі сервіси:
+#### Метод 2: Використання Makefile
 ```bash
+git clone <repository-url>
+cd familyevening
+make quick-start
+```
+
+#### Метод 3: Ручний запуск
+```bash
+git clone <repository-url>
+cd familyevening
+
+# Увімкнути BuildKit для швидшої збірки
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+
+# Паралельна збірка та запуск
+docker-compose build --parallel
 docker-compose up -d
 ```
 
-3. Додаток буде доступний:
-   - Frontend (користувачі): http://localhost
-   - Адмін панель: http://localhost/admin/login (логін: `admin`, пароль: `password`)
-   - Backend API: http://localhost:3000
-   - PostgreSQL: localhost:5433
+### Час запуску
+- ⚡ **Перша збірка**: 2-3 хвилини
+- 🚀 **Наступні запуски**: 5-10 секунд (завдяки кешуванню)
+
+### Доступ до додатку
+- 📱 **Frontend**: http://localhost
+- 🔧 **Backend API**: http://localhost:3000
+- 👤 **Адмін панель**: http://localhost/admin/login
+  - Логін: `admin`
+  - Пароль: `password`
 
 4. Зупинка сервісів:
 ```bash
