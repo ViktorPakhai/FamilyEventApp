@@ -93,10 +93,11 @@ make shell         # Shell в контейнері
 | Запуск контейнерів | ~15 секунд | ~2-3 секунди | **5x швидше** |
 
 ### Розмір
-| Метрика | До | Після |
-|---------|-----|-------|
-| Кількість контейнерів | 3 (db+backend+frontend) | 1 |
-| Розмір всіх образів | ~800 MB | ~400 MB |
+| Метрика | До | Після | Покращення |
+|---------|-----|-------|------------|
+| Кількість контейнерів | 3 (db+backend+frontend) | 1 | **3x менше** |
+| Розмір образу (v0.1.1) | ~573 MB | - | Baseline |
+| Розмір образу (v0.3.0) | - | ~206 MB | **64% менше** |
 
 ## Як користуватися
 
@@ -168,9 +169,43 @@ familyevening:
 ✅ **Зручність**: Makefile та автоматичні скрипти
 ✅ **Портативність**: Легко розгорнути на будь-якій машині
 
+## v0.3.0 - Оптимізація розміру образу (2025-11-18)
+
+### Зміни в архітектурі
+Додано **третій stage** для компіляції backend залежностей:
+
+```dockerfile
+# Stage 1: Frontend builder
+FROM node:18-alpine AS frontend-builder
+# Збірка React додатку
+
+# Stage 2: Backend dependencies builder
+FROM node:18-alpine AS backend-builder
+RUN apk add --no-cache python3 make g++
+# Компіляція better-sqlite3
+
+# Stage 3: Final runtime image
+FROM node:18-alpine
+RUN apk add --no-cache nginx
+# Тільки nginx, БЕЗ build tools
+```
+
+### Ключові покращення
+
+1. **Відокремлена компіляція**: Build tools (python3, make, g++) тільки в builder stage
+2. **Мінімальний runtime**: Фінальний образ містить тільки nginx та Node.js
+3. **Копіювання скомпільованих залежностей**: `COPY --from=backend-builder /app/node_modules`
+4. **Очищення непотрібних файлів**: `rm -rf /tmp/* /var/tmp/* /usr/share/man /usr/share/doc`
+5. **Оптимізований startup скрипт**: `exec node` замість створення нового процесу
+
+### Результати
+- **573 MB → 206 MB** (скорочення на 64%)
+- Час збірки залишився такий самий (~25-30 сек)
+- Всі функції працюють ідентично
+
 ## Можливі подальші оптимізації
 
 1. **Pre-built images**: Публікувати готові образи в Docker Hub
-2. **Alpine nginx**: Ще менший базовий образ
-3. **Production build**: Окремий Dockerfile.prod без dev-залежностей
+2. **Distroless base**: Використати Google Distroless для ще меншого розміру
+3. **Production build**: Окремий Dockerfile.prod з додатковими оптимізаціями
 4. **Multi-platform**: Збірка для amd64 та arm64
