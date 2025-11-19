@@ -16,8 +16,8 @@ function LoginPage({ setUser }) {
       setUserName(savedUserName)
     }
 
-    // Завантажити доступні події
-    fetch('/api/admin/events')
+    // Завантажити доступні активні події
+    fetch('/api/events')
       .then(res => res.json())
       .then(data => {
         setEvents(data.events)

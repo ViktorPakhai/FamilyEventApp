@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS events (
     name TEXT NOT NULL,
     event_date DATETIME NOT NULL,
     games_enabled INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

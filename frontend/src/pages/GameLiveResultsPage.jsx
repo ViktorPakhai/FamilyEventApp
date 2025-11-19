@@ -28,7 +28,7 @@ function GameLiveResultsPage() {
 
   const loadGameInfo = async () => {
     try {
-      const response = await fetch('/api/admin/events')
+      const response = await fetch('/api/events')
       const data = await response.json()
 
       // Знайти гру серед всіх подій

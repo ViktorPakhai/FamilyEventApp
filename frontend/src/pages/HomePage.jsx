@@ -7,7 +7,7 @@ function HomePage({ user, setUser }) {
 
   useEffect(() => {
     // Завантажити дані про подію, щоб перевірити чи увімкнені ігри
-    fetch('/api/admin/events')
+    fetch('/api/events')
       .then(res => res.json())
       .then(data => {
         const currentEvent = data.events.find(e => e.id === user.eventId)

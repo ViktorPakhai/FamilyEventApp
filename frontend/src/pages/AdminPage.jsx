@@ -124,6 +124,17 @@ function AdminPage() {
     }
   }
 
+  const toggleEventActive = async (eventId) => {
+    try {
+      await fetch(`/api/admin/events/${eventId}/toggle-active`, {
+        method: 'PATCH'
+      })
+      loadEvents()
+    } catch (err) {
+      console.error('Error toggling event active:', err)
+    }
+  }
+
   const toggleEventGames = async (eventId) => {
     try {
       await fetch(`/api/admin/events/${eventId}/toggle-games`, {
@@ -314,19 +325,35 @@ function AdminPage() {
                     <div style={{ flex: 1 }}>
                       <strong>{event.name}</strong><br />
                       <small>{new Date(event.event_date).toLocaleString('uk-UA')}</small><br />
-                      <span style={{
-                        display: 'inline-block',
-                        marginTop: '8px',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        background: event.games_enabled ? '#d1fae5' : '#fee2e2',
-                        color: event.games_enabled ? '#059669' : '#dc2626'
-                      }}>
-                        Ігри: {event.games_enabled ? 'Увімкнено' : 'Вимкнено'}
-                      </span>
+                      <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '12px',
+                          background: event.is_active ? '#d1fae5' : '#fee2e2',
+                          color: event.is_active ? '#059669' : '#dc2626'
+                        }}>
+                          Подія: {event.is_active ? 'Активна' : 'Деактивована'}
+                        </span>
+                        <span style={{
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '12px',
+                          background: event.games_enabled ? '#d1fae5' : '#fee2e2',
+                          color: event.games_enabled ? '#059669' : '#dc2626'
+                        }}>
+                          Ігри: {event.games_enabled ? 'Увімкнено' : 'Вимкнено'}
+                        </span>
+                      </div>
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        className={`btn ${event.is_active ? 'btn-secondary' : 'btn-success'}`}
+                        style={{ padding: '8px 16px', fontSize: '14px', marginBottom: 0, width: 'auto' }}
+                        onClick={() => toggleEventActive(event.id)}
+                      >
+                        {event.is_active ? 'Деактивувати' : 'Активувати'}
+                      </button>
                       <button
                         className={`btn ${event.games_enabled ? 'btn-secondary' : 'btn-success'}`}
                         style={{ padding: '8px 16px', fontSize: '14px', marginBottom: 0, width: 'auto' }}

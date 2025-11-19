@@ -31,6 +31,17 @@ app.use(session({
 // USER ROUTES (для користувачів на події)
 // ============================================
 
+// Отримати активні події (для користувачів)
+app.get('/api/events', async (req, res) => {
+  try {
+    const events = db.prepare('SELECT * FROM events WHERE is_active = 1 ORDER BY event_date DESC').all();
+    res.json({ events });
+  } catch (error) {
+    console.error('Get active events error:', error);
+    res.status(500).json({ error: 'Помилка отримання подій' });
+  }
+});
+
 // Вхід користувача за іменем
 app.post('/api/user/login', async (req, res) => {
   try {
@@ -40,10 +51,13 @@ app.post('/api/user/login', async (req, res) => {
       return res.status(400).json({ error: 'Ім\'я та ID події обов\'язкові' });
     }
 
-    // Перевірка існування події
-    const eventCheck = db.prepare('SELECT id FROM events WHERE id = ?').get(eventId);
+    // Перевірка існування події та що вона активна
+    const eventCheck = db.prepare('SELECT id, is_active FROM events WHERE id = ?').get(eventId);
     if (!eventCheck) {
       return res.status(404).json({ error: 'Подію не знайдено' });
+    }
+    if (eventCheck.is_active !== 1) {
+      return res.status(403).json({ error: 'Подія деактивована' });
     }
 
     // Створення сесії користувача
@@ -351,6 +365,30 @@ app.delete('/api/admin/events/:eventId', async (req, res) => {
   } catch (error) {
     console.error('Delete event error:', error);
     res.status(500).json({ error: 'Помилка видалення події' });
+  }
+});
+
+// Перемкнути активність події
+app.patch('/api/admin/events/:eventId/toggle-active', async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    const currentEvent = db.prepare('SELECT is_active FROM events WHERE id = ?').get(eventId);
+    const newValue = currentEvent.is_active === 1 ? 0 : 1;
+
+    db.prepare(
+      'UPDATE events SET is_active = ? WHERE id = ?'
+    ).run(newValue, eventId);
+
+    const updatedEvent = db.prepare('SELECT * FROM events WHERE id = ?').get(eventId);
+
+    res.json({
+      success: true,
+      event: updatedEvent
+    });
+  } catch (error) {
+    console.error('Toggle event active error:', error);
+    res.status(500).json({ error: 'Помилка перемикання активності події' });
   }
 });
 
