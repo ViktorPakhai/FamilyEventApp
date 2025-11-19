@@ -269,21 +269,38 @@ docker-compose up -d
 
 ### Публікація нової версії (для розробників)
 
+#### Multi-Platform (Рекомендовано)
+
+Підтримує **amd64** та **arm64**:
+
 ```bash
 # 1. Увійдіть в Docker Hub
 docker login
 
-# 2. Зберіть образ
+# 2. Опублікуйте multi-platform образ
+make publish-multi
+
+# Або з конкретною версією
+make publish-multi-version VERSION=v0.5.0
+
+# Або використайте скрипт напряму
+./docker-publish-multiplatform.sh v0.5.0
+```
+
+#### Single Platform (швидше для тестування)
+
+```bash
+# 1. Увійдіть в Docker Hub
+docker login
+
+# 2. Зберіть образ локально
 make build
 
 # 3. Опублікуйте (використає версію з git tag)
 make publish
 
 # Або вкажіть конкретну версію
-make publish-version VERSION=v0.3.0
-
-# Або використайте скрипт напряму
-./docker-publish.sh v0.3.0
+make publish-version VERSION=v0.5.0
 ```
 
 Скрипт автоматично створить теги `latest` та вказану версію.

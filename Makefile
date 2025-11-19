@@ -41,8 +41,14 @@ test: ## Тестувати API endpoints
 	@echo "Testing backend API..."
 	@curl -s http://localhost:3000/api/admin/events | jq
 
-publish: ## Опублікувати образ на Docker Hub
+publish: ## Опублікувати образ на Docker Hub (single platform)
 	@./docker-publish.sh
 
 publish-version: ## Опублікувати образ з конкретною версією (make publish-version VERSION=v0.3.0)
 	@./docker-publish.sh $(VERSION)
+
+publish-multi: ## Опублікувати multi-platform образ (amd64, arm64)
+	@./docker-publish-multiplatform.sh
+
+publish-multi-version: ## Опублікувати multi-platform з версією (make publish-multi-version VERSION=v0.5.0)
+	@./docker-publish-multiplatform.sh $(VERSION)

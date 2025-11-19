@@ -2,7 +2,35 @@
 
 ## Публікація образу на Docker Hub
 
-### Швидкий спосіб (автоматичний скрипт)
+### Multi-Platform Build (Рекомендовано) 🌟
+
+Підтримує обидві архітектури: **amd64** (Intel/AMD) та **arm64** (Apple Silicon/ARM)
+
+```bash
+# 1. Увійдіть в Docker Hub (один раз)
+docker login
+
+# 2. Запустіть multi-platform публікацію
+./docker-publish-multiplatform.sh
+
+# Або вкажіть конкретну версію
+./docker-publish-multiplatform.sh v0.5.0
+
+# Або через Makefile
+make publish-multi
+make publish-multi-version VERSION=v0.5.0
+```
+
+Скрипт автоматично:
+- ✅ Налаштує Docker buildx для multi-platform
+- ✅ Зберіть образи для linux/amd64 та linux/arm64
+- ✅ Створить теги для `latest` та версії
+- ✅ Відправить обидва образи на Docker Hub
+- ✅ Docker автоматично вибере правильну платформу при pull
+
+---
+
+### Single Platform Build (швидший для тестування)
 
 ```bash
 # 1. Увійдіть в Docker Hub (один раз)
@@ -15,11 +43,7 @@ docker login
 ./docker-publish.sh v0.3.0
 ```
 
-Скрипт автоматично:
-- ✅ Перевірить авторизацію
-- ✅ Створить теги для `latest` та версії
-- ✅ Відправить обидва образи на Docker Hub
-- ✅ Покаже посилання на ваш репозиторій
+**Примітка:** Зберіє тільки для вашої поточної архітектури.
 
 ---
 
