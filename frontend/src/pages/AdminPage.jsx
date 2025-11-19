@@ -555,7 +555,7 @@ function AdminPage() {
                         fontSize: '16px',
                         flexShrink: 0
                       }}>
-                        {index + 1}
+                        {userQuestions.length - index}
                       </div>
                       <input
                         type="checkbox"
