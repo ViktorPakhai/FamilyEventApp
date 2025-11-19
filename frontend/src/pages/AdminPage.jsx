@@ -208,19 +208,6 @@ function AdminPage() {
     }
   }
 
-  const updateQuestionStars = async (questionId, stars) => {
-    try {
-      await fetch(`/api/admin/user-questions/${questionId}/stars`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stars })
-      })
-      loadUserQuestions(selectedEvent)
-    } catch (err) {
-      console.error('Error updating stars:', err)
-    }
-  }
-
   const toggleQuestionAnswered = async (questionId) => {
     try {
       console.log('Toggling question answered status:', questionId)
@@ -552,9 +539,24 @@ function AdminPage() {
               </p>
             ) : (
               <ul className="question-list">
-                {userQuestions.map(q => (
+                {userQuestions.map((q, index) => (
                   <li key={q.id} className="question-item">
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <div style={{
+                        minWidth: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        background: q.is_answered === 1 ? '#d1d5db' : '#3b82f6',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+                        flexShrink: 0
+                      }}>
+                        {index + 1}
+                      </div>
                       <input
                         type="checkbox"
                         checked={q.is_answered === 1}
@@ -562,7 +564,7 @@ function AdminPage() {
                         style={{
                           width: '20px',
                           height: '20px',
-                          marginTop: '4px',
+                          marginTop: '10px',
                           cursor: 'pointer',
                           flexShrink: 0
                         }}
@@ -582,17 +584,6 @@ function AdminPage() {
                         }}>
                           {q.question_text}
                         </p>
-                        <div className="stars">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <span
-                              key={star}
-                              className={`star ${star <= q.stars ? 'filled' : 'empty'}`}
-                              onClick={() => updateQuestionStars(q.id, star === q.stars ? star - 1 : star)}
-                            >
-                              ⭐
-                            </span>
-                          ))}
-                        </div>
                       </div>
                     </div>
                   </li>

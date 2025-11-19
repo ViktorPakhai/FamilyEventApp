@@ -524,39 +524,13 @@ app.get('/api/admin/events/:eventId/user-questions', async (req, res) => {
        FROM user_questions uq
        JOIN user_sessions us ON uq.user_session_id = us.id
        WHERE uq.event_id = ?
-       ORDER BY uq.stars DESC, uq.created_at DESC`
+       ORDER BY uq.created_at DESC`
     ).all(eventId);
 
     res.json({ questions });
   } catch (error) {
     console.error('Get user questions error:', error);
     res.status(500).json({ error: 'Помилка отримання питань' });
-  }
-});
-
-// Змінити кількість зірочок питання
-app.patch('/api/admin/user-questions/:questionId/stars', async (req, res) => {
-  try {
-    const { questionId } = req.params;
-    const { stars } = req.body;
-
-    if (stars === undefined || stars < 0 || stars > 5) {
-      return res.status(400).json({ error: 'Зірочки мають бути від 0 до 5' });
-    }
-
-    db.prepare(
-      'UPDATE user_questions SET stars = ? WHERE id = ?'
-    ).run(stars, questionId);
-
-    const updatedQuestion = db.prepare('SELECT * FROM user_questions WHERE id = ?').get(questionId);
-
-    res.json({
-      success: true,
-      question: updatedQuestion
-    });
-  } catch (error) {
-    console.error('Update stars error:', error);
-    res.status(500).json({ error: 'Помилка оновлення зірочок' });
   }
 });
 
